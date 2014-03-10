@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension id="duplicate_entry_index" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+	<name>Duplicate Entry from Index</name>
+	<description>Adds a custom action to enable duplicating multiple entries from the section's index view.</description>
+	<repo type="github">https://github.com/jimlambie/duplicate_entry_index</repo>
+	<url type="discuss"></url>
+	<types>
+		<type>Workflow</type>
+	</types>
+	<authors>
+		<author>
+    			<name github="jimlambie" symphony="community">James Lambie</name>
+		</author>
+	</authors>
+	<releases>
+		<release version="1.0.0" date="2014-03-10" min="2.3.x" />
+	</releases>
+</extension>
