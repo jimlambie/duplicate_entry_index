@@ -34,14 +34,14 @@
       foreach($sm->fetch() as $section) {
         $section_hash = $this->serialiseSectionSchema($section);
         if ($section_hash == $current_section_hash && $section->get('handle') != $current_section->get('handle')) {
-               $duplicate_sections[$section->get('handle')] = $section->get('name');
+               $duplicate_sections[$section->get('id')] = $section->get('name');
         }
       }
 
 			if (count($duplicate_sections) > 0) {
 			  $options[$index] = array('label' => __('Save As New'), 'options' => array());
-			  foreach($duplicate_sections as $handle => $name) {
-			    $options[$index]['options'][] = array('saveas-'.$handle, false, $name);
+			  foreach($duplicate_sections as $id => $name) {
+			    $options[$index]['options'][] = array('saveas-'.$id, false, $name);
 			  }
 			}
 
@@ -56,16 +56,14 @@
 
 				default:
 
-					list($option, $section_handle) = explode('-', $_POST['with-selected'], 3);
+					list($option, $new_section_id) = explode('-', $_POST['with-selected'], 3);
 
 					if ($option == 'saveas') {
 
-						$new_section_id = SectionManager::fetchIDFromHandle($section_handle);
 						$new_section = SectionManager::fetch($new_section_id);
 
 						foreach($checked as $entry_id){
 							$entry = EntryManager::fetch($entry_id);
-							$existing_data = $entry[0]->getData();
 
 							$existing_section = SectionManager::fetch($entry[0]->get('section_id'));
 							$existing_schema = $existing_section->fetchFieldsSchema();
@@ -77,16 +75,18 @@
 				      $new_entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));							
 
 							foreach($existing_schema as $info){
-								$result = null;
+								$existing_data = null;
 								
 								$field = FieldManager::fetch($info['id']);
 								$field_in_new_section = FieldManager::fetchFieldIDFromElementName($info['element_name'], $new_section_id);
 
-								// get data from existing entry
-								$result = $entry[0]->getData($info['id']);
+								if ($field_in_new_section) {
+									// get data from existing entry
+									$existing_data = $entry[0]->getData($info['id']);
 
-								// set it in the new entry
-								$new_entry->setData($field_in_new_section, $result);
+									// set it in the new entry
+									$new_entry->setData($field_in_new_section, $existing_data);
+								}
 							}
 
 							$new_entry->commit();
