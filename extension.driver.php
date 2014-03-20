@@ -72,7 +72,7 @@
 				      $new_entry->set('section_id', $new_section_id);
 				      $new_entry->set('author_id', is_null(Symphony::Engine()->Author) ? '1' : Symphony::Engine()->Author->get('id'));
 				      $new_entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
-				      $new_entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));							
+				      $new_entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
 
 							foreach($existing_schema as $info){
 								$existing_data = null;
@@ -89,7 +89,16 @@
 								}
 							}
 
+							// set the 'duplicated' info on both old + new entries
+							$duplicated_field_in_new_section = FieldManager::fetchFieldIDFromElementName('duplicated', $new_section_id);
+							$new_entry->setData($duplicated_field_in_new_section, "from:url");
+
 							$new_entry->commit();
+
+							$duplicated_field_in_existing_section = FieldManager::fetchFieldIDFromElementName('duplicated', $existing_section->get('id'));
+							$entry->setData($duplicated_field_in_existing_section, "in:".$new_section->get('handle'));
+
+							$entry->commit();
 
 						}
 
